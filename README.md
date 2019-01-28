@@ -1,2 +1,2 @@
 # rust-holder
-A Simple IoC Approach for the Rust Language.
+A simple IoC approach for the Rust language.

@@ -1,12 +1,12 @@
 #![allow(dead_code)]
 
 use std::any::Any;
-use std::collections::BTreeMap;
+use std::collections::HashMap;
+use std::hash::Hash;
 use std::fmt::Debug;
 
-
-/**** BASE KEY, SERVICE DEFINITIONS. ****/
-pub trait Key: Debug + Clone + Ord + Any + Send + Sync 
+/**** BASE KEY, SERVICE DEFINITIONS ****/
+pub trait Key: Debug + Clone + Ord + Any + Send + Sync + Hash
 {
 }
 
@@ -16,13 +16,7 @@ pub trait Service: Any
     fn key() -> &'static Self::Key;
 }
 
-// impl<T> Key for T
-//     where T: Debug + Clone + Ord + Any + Send + Sync 
-// { 
-// }
-
-
-/**** CONTAINER. ****/
+/**** CONTAINER ****/
 
 pub trait GenericRegistrar<TKey, TService>
     where TKey: Key, TService: Service
@@ -31,16 +25,15 @@ pub trait GenericRegistrar<TKey, TService>
         where T: Service<Key = TKey> + Into<Box<TService>>;
 }
 
-// TODO: Consider why BTreeMap ? Why not HashMap or something?
 pub struct Container<TKey, TService> {
-    services: BTreeMap<TKey, TService>,
+    pub services: HashMap<TKey, TService>,
 }
 
 impl<TKey, TService> Container<TKey, TService> 
     where TKey: Key, TService: Any
 {
     pub fn new() -> Self {
-        Container { services: BTreeMap::new() }
+        Container { services: HashMap::new() }
     }
 
     pub fn register(&mut self, key: TKey, svc: Box<TService>) -> &mut Self {

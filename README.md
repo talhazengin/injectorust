@@ -1,2 +1,2 @@
 # injectorust
-A simple IoC approach for the Rust language.
+A simple inversion of control tool for the Rust language.

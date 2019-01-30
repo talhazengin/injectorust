@@ -6,7 +6,7 @@ use std::hash::Hash;
 use std::fmt::Debug;
 
 /**** BASE KEY, SERVICE DEFINITIONS ****/
-pub trait Key: Debug + Clone + Ord + Any + Send + Sync + Hash
+pub trait Key: Debug + Clone + Eq + Any + Send + Sync + Hash
 {
 }
 
@@ -16,29 +16,35 @@ pub trait Service: Any
     fn key() -> &'static Self::Key;
 }
 
+
 /**** CONTAINER ****/
 
-pub trait GenericRegistrar<TKey, TService>
-    where TKey: Key, TService: Service
-{
-    fn register<T>(&mut self, svc: T) -> &mut Self
-        where T: Service<Key = TKey> + Into<Box<TService>>;
-}
 
 pub struct Container<TKey, TService> {
     pub services: HashMap<TKey, TService>,
 }
 
 impl<TKey, TService> Container<TKey, TService> 
-    where TKey: Key, TService: Any
+    where TKey: Key, TService: Service
 {
     pub fn new() -> Self {
         Container { services: HashMap::new() }
     }
 
+    // TODO: How can we register key type with the 
     pub fn register(&mut self, key: TKey, svc: Box<TService>) -> &mut Self {
         self
     }
+}
+
+
+/**** CONTAINER GENERIC FUNCTIONALTY ****/
+
+pub trait GenericRegistrar<TKey, TService>
+    where TKey: Key, TService: Service
+{
+    fn register<T>(&mut self, svc: T) -> &mut Self
+        where T: Service<Key = TKey> + Into<Box<TService>>;
 }
 
 impl<TKey, TService> GenericRegistrar<TKey, TService> for Container<TKey, TService>

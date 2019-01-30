@@ -30,11 +30,6 @@ impl<TKey, TService> Container<TKey, TService>
     pub fn new() -> Self {
         Container { services: HashMap::new() }
     }
-
-    // TODO: How can we register key type with the 
-    pub fn register(&mut self, key: TKey, svc: Box<TService>) -> &mut Self {
-        self
-    }
 }
 
 
@@ -43,16 +38,16 @@ impl<TKey, TService> Container<TKey, TService>
 pub trait GenericRegistrar<TKey, TService>
     where TKey: Key, TService: Service
 {
-    fn register<T>(&mut self, svc: T) -> &mut Self
-        where T: Service<Key = TKey> + Into<Box<TService>>;
+    fn register<TTrait, TStruct>(&mut self) -> &mut Self
+        where TStruct: Service<Key = TKey> + Into<Box<TService>>;
 }
 
 impl<TKey, TService> GenericRegistrar<TKey, TService> for Container<TKey, TService>
         where TKey: Key, TService: Service
 {
-    fn register<T>(&mut self, svc: T) -> &mut Self
-        where T: Service<Key = TKey> + Into<Box<TService>>,
+    fn register<TTrait, TStruct>(&mut self) -> &mut Self
+        where TStruct: Service<Key = TKey> + Into<Box<TService>>,
     {
-        self.register(T::key().clone(), svc.into())
+        self //.register(TStruct::key().clone())
     }
 }

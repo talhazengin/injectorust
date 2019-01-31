@@ -48,6 +48,11 @@ impl<TKey, TService> GenericRegistrar<TKey, TService> for Container<TKey, TServi
     fn register<TTrait, TStruct>(&mut self) -> &mut Self
         where TStruct: Service<Key = TKey> + Into<Box<TService>>,
     {
+        let service_type_id = std::any::TypeId::of::<TTrait>();
+        let implementation_type_id = std::any::TypeId::of::<TStruct>();
+
+        self.services.insert(service_type_id, implementation_type_id);
+
         self //.register(TStruct::key().clone())
     }
 }

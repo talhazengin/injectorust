@@ -1,2 +1,2 @@
 # injectorust
-A simple inversion of control tool for the Rust language.
+A simple inversion of control framework for the Rust language.
